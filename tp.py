@@ -11,6 +11,24 @@ def main():
     mesures(10000)
     mesures(100000)
 
+# Version naive
+def inclus(tab1, tab2):
+    i = 0
+    j = 0
+    n2 = len(tab2)
+    n1 = len(tab1)
+
+    while (i < n1):
+        current = False
+        while (j < n2):
+            if (tab1[i] == tab2[j]):
+                current = True
+                break
+            j += 1
+        if (not current): return current
+        i += 1
+    return current
+
 # O(2n + 2) -> linear complexity
 def appartient(tab, k):
     i = 0
