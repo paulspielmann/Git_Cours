@@ -64,8 +64,18 @@ char** my_readdir(char *path) {
 
         // Copy directory name to array
         strncpy(res[size], dir_buffer.dir_name, MAX_FILENAME_LENGTH);
+        res[size][MAX_FILENAME_LENGTH - 1] = '\0'; // Null terminate the string
 
+        size++;
     }
 
+    // Null terminate array
+    res = realloc(res, (size + 1) * sizeof(char*));
+    if (res == NULL) {
+        perror("realloc error");
+        exit(EXIT_FAILURE);
+    }
+    res[size] = NULL;
     close(dir_fd);
+    return res;
 }
