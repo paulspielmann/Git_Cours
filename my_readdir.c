@@ -79,3 +79,23 @@ char** my_readdir(char *path) {
     close(dir_fd);
     return res;
 }
+
+void print_string(char* s) {
+    int i = 0;
+    while (s[i] != '\0') {
+        printf(s[i]);    
+        i++;
+    }
+}
+
+int list_files(char** files) {
+    int i = 0;
+    while (files[i] != NULL) {
+        printf();
+        i++;
+    }
+}
+
+int main(int argc, char* argv) {
+
+}
