@@ -5,7 +5,11 @@ class Vehicule implements Comparator<Vehicule> {
     
     @Override
     public int compare(Vehicule v1, Vehicule v2) {
-        return v1.getMarque().compareTo(v2.getMarque());
+        int a = v1.getMarque().compareTo(v2.getMarque());
+        if (a == 0) {
+            return Float.compare(v1.getPrix(), v2.getPrix());
+        }
+        else return a;
     }
 
     private float taxe = 0.05f; // 5% de taxe par defaut mais modifiable
@@ -110,7 +114,7 @@ class Garage {
     public void removeVehicule(Vehicule d) {
         for (Vehicule v : stock) {
             if (v == d) {
-
+                // Do this later
             }
         }    
     }
