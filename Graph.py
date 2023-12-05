@@ -9,12 +9,18 @@ class Node:
     def add_neighbor(self, neighbor):
         self.neighbors.append(neighbor)
 
+    def __str__(self):
+        return f"Node {self.value}"
+
 
 class Edge:
     def __init__(self, node1, node2, weight):
         self.node1 = node1
         self.node2 = node2
         self.weight = weight
+
+    def __str__(self):
+        return f"Edge between {node1} and {node2}, {self.weight}"
 
 
 class Graph:
@@ -58,7 +64,8 @@ class Graph:
 
             if current_node not in visited:
                 visited.add(current_node)
-                queue.extend(self.nodes[current_node].neighbors)
+
+            queue.extend(neighbor for neighbor in current_node.neighbors if neighbor not in visited)
         return False
 
 # https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
@@ -72,7 +79,7 @@ class Graph:
 
         for node in self.nodes:
             dist[node] = inf
-            prev[node] = 0
+            prev[node] = None
             queue.add(node)
 
         # Distance from start node to current node is 0
@@ -85,7 +92,7 @@ class Graph:
             queue.remove(u)
 
             # Go through u's neighbors that are still in the queue
-            for n in self.nodes[u].neighbors:
+            for n in self.nodes[u]:
                 if n in queue:
                     # alt = distance from root to n through u
                     alt = dist[u] + self.edge_weight(u, n)
@@ -94,3 +101,36 @@ class Graph:
                         prev[n] = u
 
         return dist, prev
+
+
+node1 = Node(1)
+node2 = Node(2)
+node3 = Node(3)
+node4 = Node(4)
+node5 = Node(5)
+
+graph = Graph()
+graph.add_node(node1)
+graph.add_node(node2)
+graph.add_node(node3)
+graph.add_node(node4)
+graph.add_node(node5)
+
+graph.add_edge(node1, node2, 1)
+graph.add_edge(node2, node3, 2)
+graph.add_edge(node3, node4, 3)
+graph.add_edge(node4, node5, 4)
+graph.add_edge(node5, node1, 5)
+
+# Test BFS search
+print("BFS Search:", graph.bfs_search(node1, 3))  # Should print True
+
+# Test Dijkstra's algorithm
+distances, predecessors = graph.dijkstra(node1)
+print("Dijkstra Distances:")
+for node, dist in distances.items():
+    print(node, "distance a l'origine", dist)
+
+print("Dijkstra Predecessors:")
+for node in predecessors:
+    print(node)
