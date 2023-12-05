@@ -1,4 +1,5 @@
 from collections import deque
+import random
 
 
 class Node:
@@ -20,17 +21,10 @@ class Edge:
         self.weight = weight
 
     def __str__(self):
-        return f"Edge between {node1} and {node2}, {self.weight}"
+        return f"Edge between {self.node1} and {self.node2}, {self.weight}"
 
 
 class Graph:
-    # Adjacency : 2 nodes are adjacent
-    # if they are connected by an edge
-    # Adjacency list :
-    # Dictionnary where each key is a Node and the value associated
-    # with that Node is a list of neihgbors
-    # Better for smaller graphs, O(n+e) space where n,e is nb of nodes,edges
-
     def __init__(self):
         self.nodes = {}
         self.edges = []
@@ -45,14 +39,25 @@ class Graph:
             self.nodes[node2].append(node1)
             self.edges.append(Edge(node1, node2, weight))
 
-    # Returns the weight of the edge between nodes 1 and 2
+    # Renvoie le poids de l'arrete entre node1 et node2
     def edge_weight(self, node1, node2):
         for edge in self.edges:
             if {edge.node1, edge.node2} == {node1, node2}:
                 return edge.weight
 
-# Currently this searches for 'target' value in the graph, but this can
-# do pretty much anything that requires traversing the graph.
+    def remove_node(self, node):
+        if node in self.nodes:
+            del self.nodes[node]
+            # Retire toutes les arretes connectees a ce noeud
+            self.edges = [edge for edge in self.edges if edge.node1 != node and edge.node2 != node]
+
+            # Update les voisins des autres noeuds du graph
+            for n in self.nodes:
+                self.nodes[n] = [neighbor for neighbor in self.nodes[n] if neighbor != node]
+
+# Cherche 'target' dans le graph, return true/false
+# Peut etre modifie pour faire n'importe quoi qui demande
+# de traverser le graph
     def bfs_search(self, start_node, target):
         visited = set()
         queue = deque([start_node])
@@ -69,8 +74,11 @@ class Graph:
         return False
 
 # https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
-# dist is an array of distance from source to other nodes
-# prev is an array of previous hop-nodes on the shortest path to current node
+# Parcours le graph depuis start_node et renvoie 2 collections :
+# dist -> tableau de distance depuis start_node vers les autres noeuds
+# prev -> dictionnaire de la forme (noeud final : liste des noeuds parcourus)
+# Ces 2 collections permettent de retrouver le chemin le plus court pour
+# arriver a tous les noeuds du tableau
     def dijkstra(self, start_node):
         inf = float('inf')
         queue = set()
@@ -78,23 +86,23 @@ class Graph:
         prev = {}
 
         for node in self.nodes:
-            dist[node] = inf
+            dist[node] = inf # Toutes les distances sont init a infini
             prev[node] = None
             queue.add(node)
 
-        # Distance from start node to current node is 0
+        # La distance vers le noeud de depart est 0 (initialization)
         dist[start_node] = 0
 
         while queue:
-            # Let u be a Node, find u such as dist[u]
-            # is the min out of all nodes in the queue
+            # Soit u un noeud tq dist[u] est le
+            # minimum de tous les noeuds dans la file
             u = min(queue, key=lambda node: dist[node])
             queue.remove(u)
 
-            # Go through u's neighbors that are still in the queue
+            # On traverse les voisins du u qui sont toujours dans la file
             for n in self.nodes[u]:
                 if n in queue:
-                    # alt = distance from root to n through u
+                    # alt = distance entre start_node et u passant par n
                     alt = dist[u] + self.edge_weight(u, n)
                     if alt < dist[n]:
                         dist[n] = alt
@@ -103,34 +111,39 @@ class Graph:
         return dist, prev
 
 
-node1 = Node(1)
-node2 = Node(2)
-node3 = Node(3)
-node4 = Node(4)
-node5 = Node(5)
+random_graph = Graph()
 
-graph = Graph()
-graph.add_node(node1)
-graph.add_node(node2)
-graph.add_node(node3)
-graph.add_node(node4)
-graph.add_node(node5)
+for i in range(1, 51):
+    node = Node(i)
+    random_graph.add_node(node)
 
-graph.add_edge(node1, node2, 1)
-graph.add_edge(node2, node3, 2)
-graph.add_edge(node3, node4, 3)
-graph.add_edge(node4, node5, 4)
-graph.add_edge(node5, node1, 5)
+for _ in range(100):
+    node1, node2 = random.sample(list(random_graph.nodes.keys()), 2)
+    weight = random.randint(1, 10)
+    random_graph.add_edge(node1, node2, weight)
 
-# Test BFS search
-print("BFS Search:", graph.bfs_search(node1, 3))  # Should print True
+print(random_graph)
 
-# Test Dijkstra's algorithm
-distances, predecessors = graph.dijkstra(node1)
-print("Dijkstra Distances:")
-for node, dist in distances.items():
-    print(node, "distance a l'origine", dist)
-
-print("Dijkstra Predecessors:")
-for node in predecessors:
+print("Random Graph Nodes:")
+for node in random_graph.nodes:
     print(node)
+
+print("\nRandom Graph Edges:")
+for edge in random_graph.edges:
+    print(edge)
+
+# Test BFS
+target_node = random.choice(list(random_graph.nodes.keys()))
+start_node = random.choice(list(random_graph.nodes.keys()))
+print("\nBFS Search on Random Graph with start node ", start_node, " and target node ", target_node, ": ", random_graph.bfs_search(start_node, target_node))
+
+# Test dijkstra
+istart_node = random.choice(list(random_graph.nodes.keys()))
+distances, predecessors = random_graph.dijkstra(start_node)
+print("\nDijkstra Distances from ", start_node, " :")
+for node, dist in distances.items():
+    print(node, "distance from origin:", dist)
+
+print("\nDijkstra Predecessors:")
+for node in predecessors:
+    print(f"Predecessor of {node}: {predecessors[node]}")
