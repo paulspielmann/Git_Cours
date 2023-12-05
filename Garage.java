@@ -1,12 +1,20 @@
 import java.util.ArrayList;
 import java.util.Comparator;
 
-class Vehicule {
+class Vehicule implements Comparator<Vehicule> {
+    
+    @Override
+    public int compare(Vehicule v1, Vehicule v2) {
+        return v1.getMarque().compareTo(v2.getMarque());
+    }
+
     private float taxe = 0.05f; // 5% de taxe par defaut mais modifiable
     private int annee;
     private String marque;
     private String modele;
     private float prix;
+
+    public Vehicule() {}
 
     public Vehicule(String m, String mo, int a, float p) {
         modele = mo;
@@ -62,13 +70,6 @@ class VehiculeFrancais extends Vehicule {
     }
 }
 
-class VehiculeComparator implements Comparator<Vehicule> {
-    @Override
-    public int compare(Vehicule v1, Vehicule v2) {
-        return Float.compare(v1.getPrix(), v2.getPrix());
-    }
-}
-
 class Garage {
     private ArrayList<Vehicule> stock;
 
@@ -115,8 +116,6 @@ class Garage {
     }
 
     public void triParPrix() {
-        VehiculeComparator compar = new VehiculeComparator();
-        stock.sort(compar);
-        //stock.sort((v1, v2) -> (v1.getPrix() - v2.getPrix()));
+        stock.sort(new Vehicule());
     }
 }
