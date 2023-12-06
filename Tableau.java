@@ -22,7 +22,7 @@ class Tableau {
     // Constructeur par defaut initialize la taille a 10
     public Tableau() {
         tab = new ArrayList<Entier>();
-        size = 0;
+        size = 10;
     }
 
     public Tableau(int n) {
@@ -30,6 +30,7 @@ class Tableau {
         size = n;
     }
 
+    // Fill array with random values between 0 and 100
     public void populate() {
         Random rd = new Random();
         for (int i = 0; i < size; i++) {
@@ -62,6 +63,7 @@ class Tableau {
         return (res / count);
     }
 
+    // Helper functionm returns first index of value n in array
     public int getFirstIndexFromValue(int n) {
         if (size == 0) {
             System.out.println("Le tableau est vide");
